@@ -18,6 +18,8 @@ import gatorGamedayImage from '../images/UF Gator Gameday Logo.jpg';
 import cafecitoImage from '../images/Cafecito Chats.png';
 import careerShowcaseImage from '../images/UF Career Showcase Image.jpg';
 import lakeDayImage from '../images/Lake Day photo.jpg';
+import piscinada from '../images/VENSA Piscinada.jpeg';
+import halloween from '../images/VENSA Halloween.jpeg';
 
 /**
  * To enable RSVP functionality for an event:
@@ -56,7 +58,10 @@ const EVENT_IMAGE_MAP = [
   { keywords: ['beach', 'summer'], image: vensaBeachDay },
   { keywords: ['5k', 'run', 'race', 'walk'], image: Run5kImage },
   { keywords: ['spring', 'picnic', 'outdoor'], image: vensaSpring },
-]
+  { keywords: ['fiesta', 'piscina', 'piscinada'], image: piscinada },
+  { keywords: ['party', 'halloween', 'october'], image: halloween },
+];
+
 
 function getEventImage(eventTitle) {
   const titleLower = String(eventTitle || '').toLowerCase();
