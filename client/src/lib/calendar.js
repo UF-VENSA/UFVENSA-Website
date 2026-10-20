@@ -20,6 +20,7 @@ import careerShowcaseImage from '../images/UF Career Showcase Image.jpg';
 import lakeDayImage from '../images/Lake Day photo.jpg';
 import piscinada from '../images/VENSA Piscinada.jpeg';
 import halloween from '../images/VENSA Halloween.jpeg';
+import TrunkorTreat from '../images/VENSA Trunk or Treat.jpeg';
 
 /**
  * To enable RSVP functionality for an event:
@@ -60,6 +61,7 @@ const EVENT_IMAGE_MAP = [
   { keywords: ['spring', 'picnic', 'outdoor'], image: vensaSpring },
   { keywords: ['fiesta', 'piscina', 'piscinada'], image: piscinada },
   { keywords: ['party', 'halloween', 'october'], image: halloween },
+  { keywords: ['trunk', 'treat', 'candy', 'costume'], image: TrunkorTreat },
 ];
 
 
