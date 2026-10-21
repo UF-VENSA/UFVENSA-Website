@@ -86,8 +86,9 @@ export function isEventArtwork(imageUrl) {
   return imageUrl === vensaLogo || imageUrl === gatorGamedayImage;
 }
 
-export async function fetchCalendarEvents() {
+export async function fetchCalendarEvents({ throwOnError = false } = {}) {
   try {
+    if (!API_KEY || !CALENDAR_IDS.length) throw new Error('Calendar configuration is missing.');
     console.log('API Key:', API_KEY ? 'Present' : 'Missing');
     console.log('Calendar IDs:', CALENDAR_IDS.length);
     
@@ -108,19 +109,22 @@ export async function fetchCalendarEvents() {
         
         if (!response.ok) {
           console.error(`Failed to fetch from calendar:`, response.status);
-          return [];
+          return null;
         }
 
         const data = await response.json();
         return data.items || [];
       } catch (error) {
         console.error(`Error fetching calendar:`, error);
-        return [];
+        return null;
       }
     });
 
     const allEventsArrays = await Promise.all(allEventsPromises);
-    const allEvents = allEventsArrays.flat();
+    if (allEventsArrays.every((events) => events === null)) {
+      throw new Error('Calendar requests failed.');
+    }
+    const allEvents = allEventsArrays.filter(Boolean).flat();
     
     // Sort all events by start time
     allEvents.sort((a, b) => {
@@ -133,6 +137,7 @@ export async function fetchCalendarEvents() {
     return allEvents;
   } catch (error) {
     console.error('Error fetching calendar events:', error);
+    if (throwOnError) throw new Error('Unable to load events right now. Please try again.');
     return [];
   }
 }

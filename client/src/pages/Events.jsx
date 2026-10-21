@@ -16,20 +16,27 @@ export default function Events() {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [, setRsvpCounts] = useState({});
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [retry, setRetry] = useState(0);
 
   useEffect(() => {
     async function loadEvents() {
       setLoading(true);
-      const events = await fetchCalendarEvents();
-      const { upcoming } = separateEvents(events);
-      setUpcomingEvents(upcoming);
-      setLoading(false);
-      
-      // Load RSVP counts for events that have spreadsheetId
-      loadRSVPCounts(upcoming);
+      setLoadError('');
+      try {
+        const events = await fetchCalendarEvents({ throwOnError: true });
+        const { upcoming } = separateEvents(events);
+        setUpcomingEvents(upcoming);
+        // Load RSVP counts for events that have spreadsheetId
+        loadRSVPCounts(upcoming);
+      } catch (error) {
+        setLoadError(error.message);
+      } finally {
+        setLoading(false);
+      }
     }
     loadEvents();
-  }, []);
+  }, [retry]);
 
   async function loadRSVPCounts(events) {
     // Skip RSVP count fetching if no backend API URL is configured
@@ -112,6 +119,11 @@ export default function Events() {
         {loading ? (
           <div className="events-empty-state">
             <p>Loading events...</p>
+          </div>
+        ) : loadError ? (
+          <div className="events-empty-state" role="alert">
+            <p>{loadError}</p>
+            <button type="button" className="events-hero-button" onClick={() => setRetry(value => value + 1)}>Try again</button>
           </div>
         ) : upcomingEvents.length === 0 ? (
           <div className="events-empty-state">
