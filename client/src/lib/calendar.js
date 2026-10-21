@@ -22,6 +22,7 @@ import cafecitoImage from '../images/Cafecito Chats.png';
 import careerShowcaseImage from '../images/UF Career Showcase Image.jpg';
 import lakeDayImage from '../images/Lake Day photo.jpg';
 import piscinadaImage from '../images/VENSA Piscinada.jpeg';
+import careerShowdownMentorship from '../images/VENSA Career Showdown Mentorship.png';
 
 // Halloween events
 import halloweenImage from '../images/VENSA Halloween.jpeg';
@@ -67,6 +68,7 @@ const EVENT_IMAGE_RULES = [
   { matchers: ['general body meeting', 'gbm'], image: gbmImage },
   { matchers: ['executive board', 'e board', 'eboard'], image: eboardImage },
   { matchers: ['community service', 'volunteering', 'volunteer event', 'food bank', 'blood drive'], image: volunteerImage },
+  { matchers: ['career showdown mentorship'], image: careerShowdownMentorship },
 ];
 
 export function getEventImage(eventTitle) {
