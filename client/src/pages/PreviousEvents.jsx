@@ -10,7 +10,7 @@ import linkedinIcon from "../images/VENSA Website LinkedIn.png";
 import gbmImage from "../images/VENSA GBM.png";
 import bonfireImage from "../images/VENSA Bonfire.png";
 import resumeWorkshopImage from "../images/VENSA Resume Workshop.png";
-import { fetchCalendarEvents, separateEvents } from "../lib/calendar";
+import { fetchCalendarEvents, isEventArtwork, separateEvents } from "../lib/calendar";
 import { fetchDriveEvents } from "../lib/googleDrive";
 
 // Hardcoded fallback events
@@ -46,7 +46,7 @@ const fallbackEvents = [
 
 export default function PreviousEvents() {
   const [pastEvents, setPastEvents] = useState(fallbackEvents);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [driveEvents, setDriveEvents] = useState([]);
@@ -54,6 +54,7 @@ export default function PreviousEvents() {
 
   // Handle image load errors by trying fallback URLs
   const handleImageError = (e, photo) => {
+    if (e.currentTarget.getAttribute('src') === vensaLogo) return;
     if (photo?.fallbacks) {
       const currentSrc = e.target.src;
       const nextIndex = photo.fallbacks.indexOf(currentSrc) + 1;
@@ -63,9 +64,10 @@ export default function PreviousEvents() {
       }
     }
     // All fallbacks failed — show VENSA logo
-    e.target.src = vensaLogo;
-    e.target.style.objectFit = 'contain';
-    e.target.style.padding = '40px';
+    e.currentTarget.src = vensaLogo;
+    e.currentTarget.style.objectFit = 'contain';
+    e.currentTarget.style.padding = '24px';
+    e.currentTarget.style.backgroundColor = '#f3f4f6';
   };
 
   const openEventModal = (event) => {
@@ -229,8 +231,9 @@ export default function PreviousEvents() {
                     style={{ 
                       width: '100%',
                       height: '100%',
-                      objectFit: (event.photos && event.photos.length > 0) || event.imageUrl ? 'cover' : 'contain',
-                      padding: (event.photos && event.photos.length > 0) || event.imageUrl ? '0' : '40px'
+                      objectFit: (event.photos && event.photos.length > 0) || !isEventArtwork(event.imageUrl) ? 'cover' : 'contain',
+                      padding: (event.photos && event.photos.length > 0) || !isEventArtwork(event.imageUrl) ? '0' : '24px',
+                      backgroundColor: isEventArtwork(event.imageUrl) ? '#f3f4f6' : 'transparent'
                     }}
                     onError={(e) => handleImageError(e, event.photos?.[0])}
                   />

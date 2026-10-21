@@ -25,338 +25,65 @@ import piscinadaImage from '../images/VENSA Piscinada.jpeg';
 
 // Halloween events
 import halloweenImage from '../images/VENSA Halloween.jpeg';
-import trunkOrTreatImage from '../images/VENSA Trunk or Treat.jpeg';
+import trunkOrTreatImage from '../images/Trunk or Treat.jpeg';
 
 // Default image
 const vensaLogo = '/vensa-logo.png';
 
+const API_KEY = import.meta.env.VITE_GOOGLE_CALENDAR_API_KEY;
+const CALENDAR_IDS = import.meta.env.VITE_GOOGLE_CALENDAR_IDS?.split(',').map((id) => id.trim()).filter(Boolean) || [];
 
-// ============================================================
-// NORMALIZE EVENT TITLES
-// ============================================================
-
-/**
- * Normalizes a Google Calendar event title so image matching is
- * consistent even if capitalization or spacing changes.
- *
- * Example:
- *
- * "TRUNK OR TREAT"
- * becomes
- * "trunk or treat"
- */
-function normalizeEventTitle(title) {
+// Normalize punctuation, accents and spacing so phrases match whole words.
+// Add future named events here, with specific phrases before broader event names.
+export function normalizeEventTitle(title) {
   return String(title || '')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
+    .replace(/['’]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
     .trim()
     .replace(/\s+/g, ' ');
 }
 
-
-// ============================================================
-// EXACT / HIGH-PRIORITY EVENT IMAGE RULES
-// ============================================================
-
-/**
- * IMPORTANT:
- *
- * More specific events MUST come before general categories.
- *
- * Each matcher represents a phrase that may appear in the
- * Google Calendar event title.
- */
-
-const SPECIFIC_EVENT_IMAGES = [
-  // ----------------------------------------------------------
-  // Halloween
-  // ----------------------------------------------------------
-
-  {
-    matchers: [
-      'trunk or treat',
-      'trunk-or-treat',
-    ],
-    image: trunkOrTreatImage,
-  },
-
-  {
-    matchers: [
-      'halloween party',
-      'halloween',
-    ],
-    image: halloweenImage,
-  },
-
-  // ----------------------------------------------------------
-  // Lake / Beach / Springs
-  // ----------------------------------------------------------
-
-  {
-    matchers: [
-      'lake day',
-    ],
-    image: lakeDayImage,
-  },
-
-  {
-    matchers: [
-      'beach day',
-    ],
-    image: vensaBeachDay,
-  },
-
-  {
-    matchers: [
-      'springs',
-      'spring trip',
-      'springs trip',
-    ],
-    image: vensaSpringImage,
-  },
-
-  // ----------------------------------------------------------
-  // Piscinada
-  // ----------------------------------------------------------
-
-  {
-    matchers: [
-      'piscinada',
-      'fiesta piscina',
-    ],
-    image: piscinadaImage,
-  },
-
-  // ----------------------------------------------------------
-  // Career Showcase
-  // ----------------------------------------------------------
-
-  {
-    matchers: [
-      'career showcase',
-    ],
-    image: careerShowcaseImage,
-  },
-
-  // ----------------------------------------------------------
-  // Cafecito Chats
-  // ----------------------------------------------------------
-
-  {
-    matchers: [
-      'cafecito chats',
-      'cafecito',
-      'coffee chat',
-    ],
-    image: cafecitoImage,
-  },
-
-  // ----------------------------------------------------------
-  // Valentine's BBQ
-  // ----------------------------------------------------------
-
-  {
-    matchers: [
-      "valentine's bbq",
-      'valentines bbq',
-      'valentine bbq',
-    ],
-    image: valentineBbqImage,
-  },
-
-  // ----------------------------------------------------------
-  // Pickleball
-  // ----------------------------------------------------------
-
-  {
-    matchers: [
-      'pickleball',
-      'pickleball tournament',
-    ],
-    image: pickleballImage,
-  },
-
-  // ----------------------------------------------------------
-  // Caracas en el 2000
-  // ----------------------------------------------------------
-
-  {
-    matchers: [
-      'caracas en el 2000',
-      'fiesta caracas',
-    ],
-    image: fiestaCaracasImage,
-  },
-
-  // ----------------------------------------------------------
-  // 5K / Pace
-  // ----------------------------------------------------------
-
-  {
-    matchers: [
-      '5k',
-      'vensa pace',
-    ],
-    image: run5kImage,
-  },
-
-  // ----------------------------------------------------------
-  // Total Body
-  // ----------------------------------------------------------
-
-  {
-    matchers: [
-      'total body',
-    ],
-    image: totalBodyImage,
-  },
-
-  // ----------------------------------------------------------
-  // Pilates
-  // ----------------------------------------------------------
-
-  {
-    matchers: [
-      'pilates',
-    ],
-    image: pilatesImage,
-  },
-
-  // ----------------------------------------------------------
-  // Resume Workshop
-  // ----------------------------------------------------------
-
-  {
-    matchers: [
-      'resume workshop',
-      'résumé workshop',
-    ],
-    image: resumeWorkshopImage,
-  },
-
-  // ----------------------------------------------------------
-  // Tabling
-  // ----------------------------------------------------------
-
-  {
-    matchers: [
-      'tabling',
-    ],
-    image: tablingImage,
-  },
-
-  // ----------------------------------------------------------
-  // Volunteering
-  // ----------------------------------------------------------
-
-  {
-    matchers: [
-      'volunteering',
-      'volunteer event',
-      'community service',
-      'food bank',
-      'blood drive',
-    ],
-    image: volunteerImage,
-  },
-
-  // ----------------------------------------------------------
-  // E-Board
-  // ----------------------------------------------------------
-
-  {
-    matchers: [
-      'eboard',
-      'e-board',
-      'executive board',
-    ],
-    image: eboardImage,
-  },
-
-  // ----------------------------------------------------------
-  // Bonfire
-  // ----------------------------------------------------------
-
-  {
-    matchers: [
-      'bonfire',
-    ],
-    image: bonfireImage,
-  },
-
-  // ----------------------------------------------------------
-  // General Body Meetings
-  // ----------------------------------------------------------
-
-  {
-    matchers: [
-      'general body meeting',
-      'general meeting',
-      'gbm',
-    ],
-    image: gbmImage,
-  },
+const EVENT_IMAGE_RULES = [
+  { matchers: ['trunk or treat'], image: trunkOrTreatImage },
+  { matchers: ['halloween party', 'halloween'], image: halloweenImage },
+  { matchers: ['career showcase'], image: careerShowcaseImage },
+  { matchers: ['lake day'], image: lakeDayImage },
+  { matchers: ['cafecito chats', 'cafecito'], image: cafecitoImage },
+  { matchers: ['pickleball'], image: pickleballImage },
+  { matchers: ['piscinada'], image: piscinadaImage },
+  { matchers: ['total body'], image: totalBodyImage },
+  { matchers: ['pilates'], image: pilatesImage },
+  { matchers: ['resume workshop'], image: resumeWorkshopImage },
+  { matchers: ['valentines bbq', 'valentine bbq'], image: valentineBbqImage },
+  { matchers: ['caracas en el 2000'], image: fiestaCaracasImage },
+  { matchers: ['vensa 5k', 'vensa pace', '5k'], image: run5kImage },
+  { matchers: ['beach day'], image: vensaBeachDay },
+  { matchers: ['springs trip', 'spring trip', 'springs'], image: vensaSpringImage },
+  { matchers: ['tabling'], image: tablingImage },
+  { matchers: ['bonfire'], image: bonfireImage },
+  { matchers: ['general body meeting', 'gbm'], image: gbmImage },
+  { matchers: ['executive board', 'e board', 'eboard'], image: eboardImage },
+  { matchers: ['community service', 'volunteering', 'volunteer event', 'food bank', 'blood drive'], image: volunteerImage },
 ];
 
-
-// ============================================================
-// EVENT IMAGE LOOKUP
-// ============================================================
-
-function getEventImage(eventTitle) {
+export function getEventImage(eventTitle) {
   const title = normalizeEventTitle(eventTitle);
+  if (/\b(?:uf|florida) vs [a-z0-9]/.test(title)) return gatorGamedayImage;
 
-  console.log(`[VENSA Calendar] Finding image for: "${title}"`);
-
-  // ----------------------------------------------------------
-  // UF GAME DAYS
-  // ----------------------------------------------------------
-
-  // Examples:
-  // UF vs LSU
-  // UF vs. Georgia
-  // UF VS Miami
-
-  const isGatorGame =
-    /\buf\s+vs\.?\s+\S+/i.test(title) ||
-    /\bflorida\s+vs\.?\s+\S+/i.test(title);
-
-  if (isGatorGame) {
-    console.log(
-      `[VENSA Calendar] "${title}" -> Gator Gameday image`
-    );
-
-    return gatorGamedayImage;
-  }
-
-
-  // ----------------------------------------------------------
-  // SPECIFIC VENSA EVENTS
-  // ----------------------------------------------------------
-
-  for (const eventImage of SPECIFIC_EVENT_IMAGES) {
-    const matchedPhrase = eventImage.matchers.find((matcher) =>
-      title.includes(matcher)
-    );
-
-    if (matchedPhrase) {
-      console.log(
-        `[VENSA Calendar] "${title}" matched "${matchedPhrase}"`
-      );
-
-      return eventImage.image;
+  const paddedTitle = ` ${title} `;
+  for (const rule of EVENT_IMAGE_RULES) {
+    if (rule.matchers.some((phrase) => paddedTitle.includes(` ${phrase} `))) {
+      return rule.image;
     }
   }
-
-
-  // ----------------------------------------------------------
-  // FALLBACK
-  // ----------------------------------------------------------
-
-  console.log(
-    `[VENSA Calendar] No image mapping found for "${title}". Using VENSA logo.`
-  );
-
   return vensaLogo;
+}
+
+export function isEventArtwork(imageUrl) {
+  return imageUrl === vensaLogo || imageUrl === gatorGamedayImage;
 }
 
 export async function fetchCalendarEvents() {
@@ -426,7 +153,7 @@ export function parseCalendarEvent(event) {
   const title = event.summary || event.title || 'Event';
   const description = event.description || '';
 
-  // Use local images based on event title keywords
+  // Use a specific local event image, or the VENSA logo for unknown titles.
   const imageUrl = getEventImage(title);
 
   // Strip HTML tags from description before parsing
@@ -473,6 +200,7 @@ export function parseCalendarEvent(event) {
     description: description,
     location: event.location || 'TBD',
     imageUrl: imageUrl,
+    imageType: isEventArtwork(imageUrl) ? 'artwork' : 'photo',
     startDate: startDate,
     endDate: endDate,
     startDateFormatted: startDate.toLocaleDateString('en-US', { 

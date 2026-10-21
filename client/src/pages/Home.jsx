@@ -16,6 +16,7 @@ import facebookIcon from "../images/VENSA Website Facebook.png";
 import pinIcon from "../images/VENSA Website Pin.png";
 import linkedinIcon from "../images/VENSA Website LinkedIn.png";
 import { fetchCalendarEvents, separateEvents } from "../lib/calendar";
+import EventImage from "../components/EventImage";
 
 export default function Home() {
   const { user, loading: authLoading } = useAuth();
@@ -132,7 +133,7 @@ export default function Home() {
         ) : nextEvent ? (
           <div className="home-featured-content">
             <div className="home-featured-image">
-              <img src={nextEvent.imageUrl} alt={nextEvent.title} />
+              <EventImage src={nextEvent.imageUrl} alt={nextEvent.title} imageType={nextEvent.imageType} />
             </div>
             <div className="home-featured-details">
               <h3 className="home-featured-event-title">{nextEvent.title}</h3>

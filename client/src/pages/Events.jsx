@@ -8,12 +8,13 @@ import facebookIcon from "../images/VENSA Website Facebook.png";
 import pinIcon from "../images/VENSA Website Pin.png";
 import linkedinIcon from "../images/VENSA Website LinkedIn.png";
 import { fetchCalendarEvents, separateEvents } from "../lib/calendar";
+import EventImage from "../components/EventImage";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 export default function Events() {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
-  const [rsvpCounts, setRsvpCounts] = useState({});
+  const [, setRsvpCounts] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -122,15 +123,7 @@ export default function Events() {
             {upcomingEvents.slice(0, 3).map((event, index) => (
               <div key={event.id} className={index % 2 === 0 ? "event-card" : "event-card event-card-reverse"}>
                 <div className="event-card-image">
-                  <img 
-                    src={event.imageUrl || vensaLogo} 
-                    alt={event.title} 
-                    style={{ 
-                      objectFit: event.imageUrl ? 'cover' : 'contain', 
-                      padding: event.imageUrl ? '0' : '40px', 
-                      backgroundColor: event.imageUrl ? 'transparent' : '#f3f4f6'
-                    }} 
-                  />
+                  <EventImage src={event.imageUrl} alt={event.title} imageType={event.imageType} />
                 </div>
                 <div className="event-card-content">
                   <h3 className="event-card-title">{event.title}</h3>
