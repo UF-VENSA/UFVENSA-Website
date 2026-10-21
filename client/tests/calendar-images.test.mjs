@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
+import { readFileSync, readdirSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { createServer } from '../node_modules/vite/dist/node/index.js';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -33,13 +35,24 @@ const examples = [
   ['Springs Trip', 'VENSA Springs.jpeg'],
   ['Tabling', 'VENSA Tabling.jpeg'],
   ['Bonfire', 'VENSA Bonfire.png'],
-  ['E-Board Meeting', 'VENSA Eboard.png'],
+  ['E-Board Meeting', 'team 3.jpeg'],
+  ['Career Showdown—Mentorship', 'VENSA Career Showdown Mentorship.png'],
   ['Community Service', 'VENSA Volunteering.jpeg'],
   ['15k fundraiser', '/vensa-logo.png'],
   ['Social Mixer in October', '/vensa-logo.png'],
   ['Professional Networking Class', '/vensa-logo.png'],
   ['Unknown random event', '/vensa-logo.png'],
 ];
+
+test('calendar image imports exist with exact casing and are tracked by Git', () => {
+  const source = readFileSync(new URL('../src/lib/calendar.js', import.meta.url), 'utf8');
+  const filenames = readdirSync(new URL('../src/images/', import.meta.url));
+  const tracked = execFileSync('git', ['-c', 'core.quotePath=false', 'ls-files', 'src/images'], { cwd: root, encoding: 'utf8' }).split(/\r?\n/);
+  for (const match of source.matchAll(/from ['"]\.\.\/images\/([^'"]+)['"]/g)) {
+    assert.ok(filenames.includes(match[1]), `Missing image or incorrect casing: ${match[1]}`);
+    assert.ok(tracked.includes(`src/images/${match[1]}`), `Untracked image: ${match[1]}`);
+  }
+});
 
 for (const [title, filename] of examples) {
   test(`maps ${title} to ${filename}`, () => {

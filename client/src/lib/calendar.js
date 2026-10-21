@@ -8,7 +8,7 @@ import vensaBeachDay from '../images/VENSA Beach Day.png';
 import bonfireImage from '../images/VENSA Bonfire.png';
 import resumeWorkshopImage from '../images/VENSA Resume Workshop.png';
 import pilatesImage from '../images/VENSA Pilates.png';
-import eboardImage from '../images/VENSA Eboard.png';
+import eboardImage from '../images/team 3.jpeg';
 import volunteerImage from '../images/VENSA Volunteering.jpeg';
 import valentineBbqImage from '../images/VENSA Valentines BBQ.jpeg';
 import pickleballImage from '../images/VENSA Pickleball.jpeg';
