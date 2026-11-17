@@ -70,6 +70,7 @@ const EVENT_IMAGE_RULES = [
   { matchers: ['executive board', 'e board', 'eboard'], image: eboardImage },
   { matchers: ['community service', 'volunteering', 'volunteer event', 'food bank', 'blood drive'], image: volunteerImage },
   { matchers: ['career showdown mentorship'], image: careerShowdownMentorship },
+  { matchers: ['santa bbq', 'santa',], image: santabbqImage },
 ];
 
 export function getEventImage(eventTitle) {
