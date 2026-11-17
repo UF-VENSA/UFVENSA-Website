@@ -23,6 +23,7 @@ import careerShowcaseImage from '../images/UF Career Showcase Image.jpg';
 import lakeDayImage from '../images/Lake Day photo.jpg';
 import piscinadaImage from '../images/VENSA Piscinada.jpeg';
 import careerShowdownMentorship from '../images/VENSA Career Showdown Mentorship.png';
+import santabbqImage from '../images/VENSA Santa BBQ.jpeg';
 
 // Halloween events
 import halloweenImage from '../images/VENSA Halloween.jpeg';
