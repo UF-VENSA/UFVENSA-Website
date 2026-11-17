@@ -66,6 +66,16 @@ test('normalizes case, accents, punctuation and spacing', () => {
   assert.equal(normalizeEventTitle('Valentine’s BBQ'), 'valentines bbq');
 });
 
+test('Santa BBQ flyer uses the uncropped artwork layout while photos retain their layout', () => {
+  const event = {
+    start: { date: '2099-11-18' }, end: { date: '2099-11-19' },
+  };
+  const flyer = parseCalendarEvent({ ...event, summary: 'Secret Santa and BBQ' });
+  assert.ok(decodeURIComponent(flyer.imageUrl).endsWith('VENSA Santa BBQ.jpeg'));
+  assert.equal(flyer.imageType, 'artwork');
+  assert.equal(parseCalendarEvent({ ...event, summary: 'Halloween Party' }).imageType, 'photo');
+});
+
 test('calendar parsing retains schedule, location and RSVP metadata', () => {
   const raw = {
     id: 'event-1', summary: 'Halloween Party',

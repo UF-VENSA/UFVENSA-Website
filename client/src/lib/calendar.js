@@ -87,7 +87,8 @@ export function getEventImage(eventTitle) {
 }
 
 export function isEventArtwork(imageUrl) {
-  return imageUrl === vensaLogo || imageUrl === gatorGamedayImage;
+  // Posters must remain fully visible; regular event photos can fill/crop the frame.
+  return imageUrl === vensaLogo || imageUrl === gatorGamedayImage || imageUrl === santabbqImage;
 }
 
 export async function fetchCalendarEvents({ throwOnError = false } = {}) {
